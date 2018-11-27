@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>账户信息</title>
+        <!--图标-->
+        <link rel="icon" href="/common/img/favicon.ico">
+        <!-- 2018-09-05最新版本的 Bootstrap 核心 CSS 文件 -->
+        <link rel="stylesheet" href="/common/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/common/css/loading.css">
+        <!--字体图标-->
+        <link rel="stylesheet" href="/common/css/font-awesome.min.css">
+        <!--自定义CSS文件-->
+        <style type="text/css">
+			html,body{width: 100%; height: 100%;overflow: hidden;}
+			body{
+				background-repeat: no-repeat;
+				background-position: center center #2D0F0F;
+                background-size: 100% 100%;
+                background-color: #777;
+			}
+            .row {
+                margin:0px;
+            }
+            .row div{
+                padding-left:0px;
+                padding-right: 0px; 
+            }
+			.container{
+                height: 100%;
+                background-color: #f5f5f5;
+                padding: 0px;
+                display: none;
+            }
+            
+            #titleNav{
+                margin: 0px;
+                background-color: #f5f5f5;
+            }
+            .breadcrumb{
+                margin: 0px;
+                line-height: 35px;
+                font-size: 1.1em;
+            }
+            .breadcrumb li,.breadcrumb li span{
+                cursor: pointer;
+            }
+            .breadcrumb li span:hover{
+                text-decoration: underline;
+            }
+            #titleCollapse ul li{
+                cursor: pointer;
+                font-size: 1.1em;
+            }
+            #titleCollapse ul li:hover{
+                color: white;
+            }
+
+            #userInfo{
+                height: calc(100% - 50px);
+                margin: 0px auto;
+                overflow-y: auto;
+                overflow-x: hidden;
+                padding: 10px 0 20px 0;
+            }
+            .table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th{border-top: none;}
+            .table>tbody>tr.info>td,.table>tbody>tr.info>th,.table>tbody>tr>td.info,.table>tbody>tr>th.info,.table>tfoot>tr.info>td,.table>tfoot>tr.info>th,.table>tfoot>tr>td.info,.table>tfoot>tr>th.info,.table>thead>tr.info>td,.table>thead>tr.info>th,.table>thead>tr>td.info,.table>thead>tr>th.info{background-color: rgba(0, 0, 0, 0)}
+            .table-hover>tbody>tr.info:hover>td,.table-hover>tbody>tr.info:hover>th,.table-hover>tbody>tr:hover>.info,.table-hover>tbody>tr>td.info:hover,.table-hover>tbody>tr>th.info:hover{background-color:rgba(0, 0, 0, 0)}
+            .info,.infoName,.infoType{
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                cursor: pointer;
+            }
+            .infoType{
+                font-size: 1.2em;
+                font-weight: bolder;
+            }
+            .infoName{
+                font-size: 1.1em;
+                font-weight: bolder;
+            }
+            .info{
+                font-size: 1.1em;
+            }
+		</style>
+    </head>
+    <body>  
+        <div class="container">
+            <nav class="navbar navbar-default" role="navigation" id="titleNav">
+                <div class="container-fluid"> 
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" id="showTitleNav">
+                            <span class="sr-only">切换导航</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <ul class="breadcrumb navbar-brand">
+                            <li class="active" onclick="window.location.href='/index.html'"><span>首页</span></li>
+                            <li>个人信息</li>
+                        </ul>
+                    </div>
+                    <div class="collapse navbar-collapse" id="titleCollapse">
+                        <ul class="nav navbar-nav">
+                            <li class="active" data-type="info"><a>基本信息</a></li>
+                            <li data-type="event"><a>动态</a></li>
+                            <li data-type="playlist"><a>歌单</a></li>
+                            <li data-type="dj"><a>电台</a></li>
+                            <li data-type="follows"><a>关注列表</a></li>
+                            <li data-type="followeds"><a>粉丝列表</a></li>
+                            <li data-type="record"><a>播放记录</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div id="userInfo" class="table-responsive">
+                <div class="row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-8 table-responsive">
+                        <table class="table">
+                            <thead id="userInfoThead">
+                                
+                            </thead>
+                            <tbody id="userInfoTbody">
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+            </div>
+
+        </div>
+    </body>
+    <!--jquery-->
+    <script src="/common/js/jquery-3.3.1.min.js"></script>
+    <script src="/common/js/jquery.session.js"></script>
+    <!--alert_info.js-->
+    <script src="/common/js/bootstrap.min.js"></script>
+    <script src="/common/js/alert_info.js"></script>
+    <script src="/common/js/loading.js"></script>
+    <!--IP-->
+    <script src="http://pv.sohu.com/cityjson"></script>
+    <!--API-->
+    <script src="/common/js/crypto-js.js"></script>
+    <!--自定义JavaScript-->
+    <script>
+        var uid = $.session.get('uid');
+
+        $(function () { 
+
+            if(isloggedIn()){
+                $("#loadingModal").show();
+                if(getLoginInfo()){
+                    $("#loadingModal").hide();
+                    setTimeout(function () {  
+                        $(".container").fadeIn(200);
+                    },300);
+                }
+
+                //小屏幕导航栏事件
+                $("#showTitleNav").click(function () {  
+                    if($("#titleCollapse").hasClass("in")){
+                        $("#titleCollapse").removeClass("in");
+                    }else{
+                        $("#titleCollapse").addClass("in");
+                    }
+                });
+                //小屏幕下点击导航栏外元素隐藏导航栏
+                $('body').bind('click', function(event) {
+                    var evt = event.srcElement ? event.srcElement : event.target;    
+                    if(evt.id == 'titleCollapse' ||  evt.id == 'showTitleNav' || evt.className == "icon-bar"){
+                        return; 
+                    }else{
+                        if($("#titleCollapse").hasClass("in")){
+                            $("#titleCollapse").removeClass("in");
+                        }
+                    }   
+                });
+                //导航栏li元素点击事件
+                $("#titleCollapse ul li").click(function () {  
+                    if(!$(this).hasClass("active")){
+                        $("#titleCollapse ul li").removeClass("active");
+                        $(this).addClass("active");
+                    }
+                    var type = $(this).attr("data-type");
+                    if(type == "info"){
+                        getLoginInfo();
+                    }else if(type == "event"){
+                        getEvent();
+                    }else if(type == "playlist"){
+                        getPlaylist();
+                    }else if(type == "dj"){
+                        getDj();
+                    }else if(type == "follows"){
+                        getFollows();
+                    }else if(type == "followeds"){
+                        getFolloweds();
+                    }else if(type == "record"){
+                        getRecord();
+                    }
+                })
+
+            }else{
+                alert_info("无登录权限！跳转登录...");
+                setTimeout(function () {  
+                    window.location.href = "/login.html";
+                },1500);
+            }
+        });
+        
+        function userInfoAppendItem(name,info) { 
+            $("#userInfoTbody").append('<tr><td></td>'+
+                '<td class="infoName" title="'+name+'">'+name+'</td>'+
+                '<td class="info" title="'+info+'">'+info+'</td></tr>');
+        }
+        function userInfoAppendTypeName(type) { 
+            $("#userInfoTbody").append('<tr><td class="infoType title="'+type+'">'+type+'</td>'+
+                '<td></td>'+
+                '<td></td></tr>');
+        }
+
+        function getLoginInfo() {  
+            if(uid != undefined){
+                $.ajax({
+                    url:"/user/detail",
+                    type:"POST",
+                    data:{
+                        "uid":uid
+                    },
+                    async:false,
+                    dataType: "json",
+                    success:function(data){
+
+                        $("#userInfoTbody").html("");
+                        $("#userInfoThead").html('<tr><th style="width:20%;border: none;"></th><th style="width:25%;border: none;"></th><th style="width:45%;border: none;"></th></tr>');
+                        
+                        if(data.code == "200"){
+
+                            userInfoAppendTypeName("账号信息");                       
+                            userInfoAppendItem("昵称",data.profile.nickname);
+                            userInfoAppendItem("用户ID",data.userPoint.userId);
+                            var gender = data.profile.gender;
+                            if(gender == "0"){
+                                gender = "保密";
+                            }else if(gender == "1"){
+                                gender = "男";
+                            }else if(gender == "2"){
+                                gender = "女";
+                            }
+                            userInfoAppendItem("性别",gender);
+                            userInfoAppendItem("出生日期",timestampToTime(data.profile.birthday));
+                            userInfoAppendItem("签名",data.profile.signature);      
+                            userInfoAppendItem("地址",getAddress(data.profile.province,data.profile.city)); 
+                            
+                            userInfoAppendTypeName("登录信息");        
+                            userInfoAppendItem("登录IP",returnCitySN.cip);
+                            userInfoAppendItem("登录地址",returnCitySN.cname);
+                             
+                            userInfoAppendTypeName("账号统计");
+                            userInfoAppendItem("等级",data.level);
+                            userInfoAppendItem("创建日期",timestampToTime(data.createTime));  
+                            userInfoAppendItem("创建天数",data.createDays);   
+                            userInfoAppendItem("已听歌曲",data.listenSongs);
+                            //userInfoAppendItem("歌单数量",data.profile.playlistCount);   
+                            userInfoAppendItem("订阅统计",data.profile.playlistBeSubscribedCount);
+
+                            //获取用户信息 , 歌单，收藏，mv, dj数量
+                            getSubcount();
+                        }else{
+                            $("#userInfo").append('<div class="row">'+
+                                '<div class="col-md-12" style="text-align:center;height: 30px;line-height: 30px;font-size: 1.1em;">'
+                                + '登录信息获取失败！'+'</div></div>');
+                        }
+                    },
+                    error:function (err) {  
+                        console.log(err); 
+                    }
+                });
+            }
+            return true;    
+        }
+        
+        //获取用户信息 , 歌单，收藏，mv, dj数量
+        function getSubcount() { 
+            $.ajax({
+                url:"/user/subcount",
+                type:"GET",
+                async:false,
+                dataType: "json",   
+                success:function(data){
+                    if(data.code == "200"){
+                        userInfoAppendItem("artist",data.artistCount);
+                        userInfoAppendItem("createDjRadio",data.createDjRadioCount);
+                        userInfoAppendItem("createdPlaylist",data.createdPlaylistCount);
+                        userInfoAppendItem("djRadio",data.djRadioCount);
+                        userInfoAppendItem("mv",data.mvCount);
+                        userInfoAppendItem("newProgram",data.newProgramCount);
+                        userInfoAppendItem("program",data.programCount);
+                        userInfoAppendItem("subPlaylist",data.subPlaylistCount);
+                    }else{
+                        console.log("获取用户信息 , 歌单，收藏，mv, dj数量 失败！");
+                        $("#userInfo").append('<div class="row">'+
+                                '<div class="col-md-12" style="text-align:center;height: 30px;line-height: 30px;font-size: 1.1em;">'
+                                + '用户信息 , 歌单，收藏，mv, dj数量数据 获取失败！'+'</div></div>');
+                    }
+                },error:function(){
+                    console.log("获取用户信息 , 歌单，收藏，mv, dj数量 失败！");
+                }
+            });
+        }
+        //获取用户歌单
+        function getPlaylist() {  
+            $.ajax({
+                url:"/user/playlist",
+                type:"POST",
+                async:false,
+                data:{
+                    "uid":uid
+                },
+                dataType: "json",   
+                success:function(data){
+                    
+                },error:function(){
+                    console.log("获取用户歌单失败！");
+                }
+            });
+        }
+        //获取用户电台
+        function getDj() {  
+            $.ajax({
+                url:"/user/dj",
+                type:"POST",
+                async:false,
+                data:{
+                    "uid":uid
+                },
+                dataType: "json",   
+                success:function(data){
+                    
+                },error:function(){
+                    console.log("获取用户电台失败！");
+                }
+            });
+        }
+        //获取用户关注列表
+        function getFollows() {  
+            $.ajax({
+                url:"/user/follows",
+                type:"POST",
+                async:false,
+                data:{
+                    "uid":uid,
+                    "limit":"10000",
+                },
+                dataType: "json",   
+                success:function(data){
+                    
+                },error:function(){
+                    console.log("获取用户关注列表失败！");
+                }
+            });
+        }
+        //获取用户粉丝列表
+        function getFolloweds() {  
+            $.ajax({
+                url:"/user/followeds",
+                type:"POST",
+                async:false,
+                data:{
+                    "uid":uid,
+                    "limit":"10000",
+                },
+                dataType: "json",   
+                success:function(data){
+                    
+                },error:function(){
+                    console.log("获取用户粉丝列表失败！");
+                }
+            });
+        }
+        //获取用户播放记录
+        function getRecord() {  
+            $.ajax({
+                url:"/user/record",
+                type:"POST",
+                async:false,
+                data:{
+                    "uid":uid,
+                    "type":"0", //type=1 时只返回 weekData, type=0 时返回 allData
+                },
+                dataType: "json",   
+                success:function(data){
+                    
+                },error:function(){
+                    console.log("获取用户播放记录失败！");
+                }
+            });
+        }
+        //获取动态
+        function getEvent() {  
+            $.ajax({
+                url:"/event",
+                type:"POST",
+                async:false,
+                dataType: "json",   
+                success:function(data){
+                    
+                },error:function(){
+                    console.log("获取动态失败！");
+                }
+            });
+        }
+
+        //获取用户动态
+        function getUserEvent() {  
+            $.ajax({
+                url:"/user/event",
+                type:"POST",
+                async:false,
+                data:{
+                    "uid":uid,
+                },
+                dataType: "json",   
+                success:function(data){
+                    
+                },error:function(){
+                    console.log("获取用户动态失败！");
+                }
+            });
+        } 
+
+        //根据省市代码获取地址
+        function  getAddress(provinceCode,cityCode) {   
+            var provinceName = "";
+            var cityName = "";
+            $.ajax({
+                url:"/json/provinceCode.json",
+                type:"GET",
+                async:false,
+                dataType: "json",
+                success:function(data){
+                    for(var i in data){
+                        if(data[i].code == provinceCode){
+                            provinceName = data[i].name;
+                            var children = data[i].children;
+                            if(children){
+                                for(var j in children){
+                                    if(children[j].code == cityCode){
+                                        cityName = children[j].name;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+            });
+            if(provinceName != ""){
+                return provinceName + " " + cityName;
+            }
+            else{
+                console.log("根据省市代码获取名称失败！");
+                return false;
+            }
+        }
+        //时间戳转换为时间
+        function timestampToTime(timestamp) {
+            //时间戳为10位需*1000，时间戳为13位的话不需乘1000
+            if(timestamp.length == "10"){
+                timestamp = timestamp * 1000;
+            }
+            var date = new Date(timestamp);
+            var Y = date.getFullYear() + '-';
+            var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+            var D = date.getDate() + ' ';
+            /*var h = date.getHours() + ':';
+            var m = date.getMinutes() + ':';
+            var s = date.getSeconds();*/
+            //return Y+M+D+h+m+s;
+            return Y+M+D;
+        }
+        //时间转换时间戳
+        function timeToTimestamp(time) { 
+            //time y-m-d h:m:s 
+            var date = new Date(time);
+            return date.valueOf();
+        }
+        //是否已登录
+        function isloggedIn() { 
+            if(uid != undefined){
+                return true;
+            }else{
+                return false;
+            }
+        }
+    </script>
+</html>

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>搜索结果</title>
+     <!--图标-->
+     <link rel="icon" href="/img/favicon.ico">
+     <!-- 2018-09-05最新版本的 Bootstrap 核心 CSS 文件 -->
+     <link rel="stylesheet" href="/common/css/bootstrap.min.css">
+     <!--字体图标-->
+    <link rel="stylesheet" href="/common/css/font-awesome.min.css">
+     <!--自定义CSS文件-->
+     <style>
+       
+      /*滚动条自定义*/
+      ::-webkit-scrollbar {
+        width: 10px; /*对垂直流动条有效*/
+        height: 10px; /*对水平流动条有效*/
+      }
+      /*定义滚动条的轨道颜色、内阴影及圆角*/
+      ::-webkit-scrollbar-track{
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+        background-color: #333;
+        border-radius: 3px;
+      }
+      /*定义滑块颜色、内阴影及圆角*/
+      ::-webkit-scrollbar-thumb{
+        border-radius: 5px;
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+        background-color: #E8E8E8;
+      }
+      /*定义两端按钮的样式*/
+      ::-webkit-scrollbar-button {
+          background-color:#333;
+          height: 0;
+      }
+      /*定义右下角汇合处的样式*/
+      ::-webkit-scrollbar-corner {
+        background:#333;
+      }
+       html,body{
+         width: 100%;
+         height: 100%;
+         background: none;
+         color: white;
+         overflow-y: hidden;
+       }
+        /*搜索结果*/
+        #searchResultDiv{
+            display: none;
+            width:100%;
+            height:100%;
+        }
+        #searchCountDiv{
+            height: 30px;
+            line-height: 30px;
+        }
+        #searachResultContaint{
+            width:100%;
+            height:calc(100% - 30px);
+        }
+
+        #searchResultTb{
+            width: 100%;
+            min-width: 860px;
+            height: 100%;
+            min-width: 860px;
+            display: inline-block;
+        }
+        #searchResultTb thead tr{
+          height: 40px;
+        }
+        #searchResultTb thead tr th{
+            border:0px;
+            padding: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            height: 40px;
+            line-height: 30px;
+        }
+        #searchResultTb tr{
+            height: 40px;
+        }
+        #searchResultTb td{
+            border:0px;
+            padding: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            height: 40px;
+            line-height: 30px;
+        }
+        #searchResultTbody{
+            width: 100%;
+            height: calc(100% - 30px);
+            display: inline-block;
+            overflow-y: scroll;
+        }
+
+        .searchResultTabNum{
+            width: 60px;
+            text-align: center;
+            display: inline-flex;
+        }
+        .searchResultTabSong{
+            width: 500px;
+            text-align: left;
+            padding-left: 15px !important;
+            overflow: hidden;
+            display: inline-flex;
+            position: relative;
+        }
+        .searchResultTabSong > span{
+            height: 30px;
+            display: inline-flex;
+        }
+        .searchResultTabSong > span > i{
+            cursor: pointer;
+            width: 25px;
+            opacity: 0.7;
+            display: none;
+            height: 30px;
+            line-height: 30px;
+        }
+        .searchResultTabSong > span > i:hover{
+            opacity: 1;
+        }
+        .searchResultTabSongSpan{
+            max-width: 380px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            float: left;
+        }
+        .searchResultTabSongName{
+            float: left;
+        }
+        .searchResultTabSongName:hover{
+            cursor: pointer;
+            color: #66afe9;
+            text-decoration:underline;
+        }
+        .searchResultTabSongAlias{
+            font-size: 0.7em;
+            color: #ddd;
+            margin-left: 5px;
+            float: left;
+            line-height: 33px;
+        }
+        
+        .span_heart{
+          position: absolute;
+          right: 0px;
+        }
+        .span_plus{
+          position: absolute;
+          right: 30px;
+        }
+        .span_play{
+          position: absolute;
+          right: 60px;
+        }
+
+        .searchResultTabAr{
+            width: 150px;
+            text-align: left;
+            padding-left: 15px !important;
+            display: inline-flex;
+        }
+        .searchResultTabAr span:hover{
+            color: #66afe9;
+            text-decoration:underline;
+            cursor: pointer;
+        }
+        .searchResultTabAm{
+            width: 150px;
+            text-align: left;
+            padding-left: 15px !important;
+            display: inline-flex;
+        } 
+        .searchResultTabAm span:hover{
+            cursor: pointer;
+            color: #66afe9;
+            text-decoration:underline;
+        }
+     </style>
+  </head>
+  
+  <body>
+    <div id="searchResultDiv">
+      <div id="searchCountDiv">
+        <span id="searchCountDivSpan1"></span>
+        <span id="searchCountDivSpan2"></span>
+      </div>
+      <div id="searachResultContaint">
+          <table class="" id="searchResultTb">
+              <thead>
+                <th class="searchResultTabNum">序号</th>
+                <th class="searchResultTabSong" >歌曲</th>
+                <th class="searchResultTabAr">歌手</th>
+                <th class="searchResultTabAm">专辑</th>
+                <th></th>
+              </thead>
+              <tbody id="searchResultTbody">
+                
+              </tbody>
+            </table>
+      </div>
+    </div>
+  </body>
+  <!--jquery-->
+  <script src="/common/js/jquery-3.3.1.min.js"></script>
+  <script src="/common/js/jquery.session.js"></script>
+  <!--API-->
+  <script src="/common/js/crypto-js.js"></script>
+  <!--自定义JavaScript-->
+  <script>
+    $(function () {  
+
+      callSearchFun();
+
+      //搜索结果滚动条事件
+      $("#searchResultTbody").scroll(function () {  
+          var scrollTop = $("#searchResultTbody").scrollTop();
+          var canSeeHeight = $("#searchResultTbody").height(); 
+          var trNum = 0;
+          $("#searchResultTbody tr").each(function () {  
+              trNum++;
+          });
+          var height = trNum * 40;
+          if(height - canSeeHeight == scrollTop){
+              search();
+          }
+      });
+    });
+    //初始化并调用搜索事件
+    function callSearchFun() {  
+        searchOffset = 0;
+        searchResultNum = 0;
+        songCount = 0;
+        $("#searchResultTbody").html("");
+        search();
+    }
+    //搜索
+    var searchLimit = 30;
+    var searchOffset = 0;
+    var searchType = 1;
+    var searchResultNum = 0;
+    var songCount = 0;
+    function search() {  
+
+        $("#searchResultDiv").show();
+        var funrst = false;
+        var keywords = GetQueryString("keywords");
+        var timestamp = Date.parse(new Date());
+        var url = "/search?timestamp="+timestamp;
+        if(keywords != ""){
+            $.ajax({
+                url:url,
+                type:"POST",
+                data:{
+                    'keywords' : keywords,
+                    'type' : searchType,          //搜索类型 1: 单曲, 10: 专辑, 100: 歌手, 1000: 歌单, 1002: 用户, 1004: MV, 1006: 歌词, 1009: 电台, 1014: 视频
+                    'limit' : searchLimit,        //返回数量,默认为 30 
+                    'offset' : searchOffset,      //偏移数量,默认为 0
+                },
+                dataType: "json",
+                async:false,
+                success:function(data){
+                    if(data.code == "200"){
+                        var result = data.result;
+                        if(searchOffset == 0){
+                            $("#searchCountDivSpan1").text('搜索"'+keywords+'",结果总计: ');
+                            $("#searchCountDivSpan2").text(result.songCount);
+                            songCount = result.songCount;
+                        }
+                        var songs = result.songs;
+                        if(songs.length > 0){
+                            for(var i in songs){
+                                var alias = "";
+                                if(songs[i].alias[0] != undefined){
+                                    alias = songs[i].alias[0];
+                                }
+                                if(alias != ""){
+                                    alias = '&nbsp;--&nbsp;'+ alias;
+                                }
+                                searchResultNum++;
+                                if(searchResultNum <= songCount){
+                                    $("#searchResultTbody").append('<tr>'+
+                                        '<td class="searchResultTabNum">'+searchResultNum+'</td>'+
+                                        '<td class="searchResultTabSong" data="'+songs[i].id+'">'+
+                                        '   <span class="searchResultTabSongSpan" title="'+songs[i].name + alias+'">'+
+                                        '       <span class="searchResultTabSongName left" >'+songs[i].name+'</span>'+
+                                        '       <span class="searchResultTabSongAlias left">'+alias+'</span>'+
+                                        '   </span>'+
+                                        '   <span class="span_heart"><i class="fa fa-heart-o" aria-hidden="true" title="喜欢"></i></span>'+
+                                        '   <span class="span_plus"><i class="fa fa-plus" aria-hidden="true" title="收藏到歌单"></i></span>'+
+                                        '   <span class="span_play"><i class="fa fa-play" aria-hidden="true" title="播放"></i></span>'+
+                                        '</td>'+
+                                        '<td class="searchResultTabAr"><span title="'+songs[i].artists[0].name+'">'+songs[i].artists[0].name+'</span></td>'+
+                                        '<td class="searchResultTabAm"><span title="'+songs[i].album.name+'">'+songs[i].album.name+'</span></td>'+
+                                        '<td></td></tr>'
+                                    );
+                                }    
+                            }
+                        }
+
+                        searchOffset += 30;
+                        funrst = true;
+                    }else{
+                      console.log("获取每日推荐歌曲失败！");
+                    }   
+                },
+                error:function (err) {  
+                  console.log(err); 
+                }
+            });
+        }
+        //相关绑定事件
+        $(".searchResultTabSong .fa-play").click(function () {  
+            var songId = $(this).parent().parent().attr("data");
+            window.parent.autoplay = true;
+            window.parent.loadPlayer(songId);
+        });
+        //歌名hover
+        $(".searchResultTabSong").hover(function () {  
+            $(this).find("i").addClass("show");
+        },function(){
+            $(this).find("i").removeClass("show");
+        });
+        //tr hover
+        $("#searchResultTbody tr").each(function () {  
+            $(this).hover(function () {  
+                $(this).css("background","rgba(255,255,255,.25)");
+            },function(){
+                $(this).css("background","none");
+            });
+        });
+        return funrst;
+    }
+    function GetQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null)
+            return decodeURI(r[2]);
+        return null;
+    }
+  </script>
+</html>

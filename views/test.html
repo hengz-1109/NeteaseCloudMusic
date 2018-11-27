@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>网易云音乐-测试页</title>
+    <style>
+      html,body{
+        height: 100vh;
+        width: 100vw;
+        margin: 0;
+        padding: 0;
+        background: #ffffff;
+        text-align: center;
+        overflow: hidden;
+      }
+      *{
+        color:rgb(100,100,100);
+      }
+      a{
+        color:#42b983;
+      }
+      ul,li{
+        margin: 0;
+      }
+      ul{
+        margin-left: -40px;
+        line-height: 30px;
+      }
+      li{
+        list-style: none;
+      }
+      
+    </style>
+  </head>
+  <body>
+      <div style="width: 100vw;height: 69vw;overflow-y: auto;">
+        <ul>
+          <li><a id="1">1.手机登录测试</a></li>
+          <li><a id="2">2.邮箱登录测试</a></li>
+        </ul>
+      </div>
+      <div id="console" style="width: 100vw;height: 30vh;position: absolute;bottom: 0;border: 1px solid #42b983;overflow-y: auto;
+        text-align: left;">
+
+      </div>
+  </body>
+  <script src="/common/js/jquery-3.3.1.min.js"></script>
+  <script src="/common/js/crypto-js.js"></script>
+  <script>
+     
+    $(function () {  
+      
+      $("#1").click(function () {
+
+        var phone = "13637180407";
+        var password = "7055583898";
+        password = strToBinary(password);
+        $.ajax({
+          url:"/login/cellphone", 
+          type:"POST",
+          data:{
+            "phone":phone,
+            "password":password
+          },
+          dataType: "json",
+          success:function(data){
+            console.log(data);
+            $("#console").append('<div class="log">'+data.code+'</div>');
+          },
+          error:function (err) {  
+            console.log(err);
+          }
+        });
+      });
+
+      $("#2").click(function () {
+
+        var email = "zh1787564662@163.com"
+        var password = "7055583898";
+        password = strToBinary(password);
+        $.ajax({
+          url:"/login",
+          type:"POST",
+          data:{
+            "email":email,
+            "password":password
+          },
+          dataType: "json",
+          success:function(data){
+            console.log(data);
+            $("#console").append('<div class="log">'+data.code+'</div>');
+          },
+          error:function (err) {  
+            console.log(err);
+          }
+        });
+
+      });
+
+    });
+
+    function strToBinary(str){
+      var result = [];
+      var list = str.split("");
+      for(var i=0;i<list.length;i++){
+          if(i != 0){
+              result.push(" ");
+          }
+          var item = list[i];
+          var binaryStr = item.charCodeAt().toString(2);
+          result.push(binaryStr);
+      }   
+      return result.join("");
+    }
+  </script>
+</html>

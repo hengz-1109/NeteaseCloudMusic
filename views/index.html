@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>网易云音乐 NodeJS 版</title>
+    <!--图标-->
+    <link rel="icon" href="/common/img/favicon.ico">
+    <!-- 2018-09-05最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="/common/css/bootstrap.min.css">
+    <!--字体图标-->
+    <link rel="stylesheet" href="/common/css/font-awesome.min.css">
+    <!--自定义CSS文件-->
+    <link rel="stylesheet" href="/common/css/loading.css">
+    <link rel="stylesheet" href="/common/css/player_audio.css">
+    <link rel="stylesheet" href="/common/css/index.css">
+  </head>
+  <body>
+       
+    <div id="container">
+
+      <!--左侧菜单-->
+      <div class="containerMenuIcon" id="showMenuDiv">
+          <i class="fa fa-reorder fa_icon" title="显示菜单" ></i>
+      </div>
+      <div class="containerMenuIcon" id="songLibrary_show">
+        <i class="fa fa-database fa_icon songLibraryIcon" title="歌曲库"></i> 
+      </div>
+      <!--<div id="menu_bar"></div>-->
+      <div id="menu_div">
+        <div style="width:40px;height:100%;float: left;">
+            <div class="icon_menu" id="hideMenu">
+              <i class="fa fa-reorder fa_icon" title="隐藏菜单"></i> 
+            </div>
+            <div class="line"></div>
+            <div class="icon_menu" id="songLibrary_hide">
+              <i class="fa fa-database fa_icon songLibraryIcon" title="歌曲库"></i> 
+            </div>
+            <div class="line"></div>
+            <div class="icon_menu" id="userIcon">
+              <img class="iconImg" id="userImg_Logout" title="点击登录" src="/common/img/iconfont/user.png">
+              <img class="iconImg" id="userImg_Login" title="账户信息">
+            </div>
+            <div class="line"></div>
+            
+            <div class="icon_menu" id="bgMenu">
+              <i class="fa fa-cogs fa_icon" title="背景选择"></i> 
+              <div id="bgMenuDiv">
+                <div data-type="1" title="音频可视化">背景一</div>
+              </div>
+            </div>
+            <div class="line"></div>
+            <!--<div class="icon_menu" >
+                <i class="fa fa-sliders fa_icon" title="设置"></i>
+            </div>--> 
+            
+            <div class="icon_menu" id="API">
+                <i class="fa fa-question-circle-o fa_icon" title="API文档" onclick="window.open('https://binaryify.github.io/NeteaseCloudMusicApi/#/?id=%E5%8F%AF%E4%BB%A5%E4%BD%BF%E7%94%A8%E4%BB%A3%E7%90%86');"></i>
+            </div>
+            <div class="icon_menu" id="logoutIcon">
+                <i class="fa fa-user-times fa-fw fa_icon" title="退出登录" onclick="logout()"></i>
+            </div>
+        </div>
+      </div>
+      
+      <!--主容器-->
+      <div id="containt">
+        <div class="songLibraryDiv" id="songLibraryDivLeft"></div>
+
+        <div class="songLibraryDiv container" id="songLibraryDiv">
+          <div class="row" id="rowDiv_Nav">
+              <!---->
+              <div id="div_pageControl">
+                  <div id="page_back"><i class="fa fa-chevron-left" aria-hidden="true"></i> </div>
+                  <div id="page_forward"><i class="fa fa-chevron-right" aria-hidden="true"></i></div>
+                  <div id="page_Refresh"><i class="fa fa-undo" aria-hidden="true"></i></div>
+              </div>
+              <!--搜索-->
+              <div id="div_search" class="input-group input-group-sm col-md-3">
+                <input id="searchIpt" type="text" class="form-control" placeholder="目前仅支持搜索歌曲功能">
+                <span id="searchBtn" class="input-group-addon"><i class="fa fa-search" aria-hidden="true"></i></span>
+              </div>
+          </div>
+
+          <div id="songLibraryContaint" class="row">
+
+            <iframe id="songLibraryIframe"></iframe>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!--播放器-->
+      <!--<div id="player_bar"></div>-->
+      <div id="player">
+        <div class="cover left"></div>
+        <div class="ctrl">
+          <div class="tag">
+            <strong>歌曲名称</strong>
+            <span class="artist">歌手</span>
+            <span class="album">专辑</span>
+          </div>
+          <div class="control">
+            <div class="left">
+              <div class="rewind icon"></div>
+              <div class="playback icon"></div>
+              <div class="fastforward icon"></div>
+              <div class="repeat icon"></div>
+            </div>
+            <div class="volume right">
+              <div class="mute icon left"></div>
+              <div class="slider left">
+                <div class="pace"></div>
+              </div>
+            </div>
+            <div id="songListsIcon" class="left">
+              <i class="fa fa-list-ol" title="播放列表"></i>
+            </div>
+            <div class="timer left">0:00</div>
+          </div>
+          <div class="player_progress">
+            <div class="slider">
+              <div class="loaded"></div>
+              <div class="pace"></div>
+            </div>
+          </div>
+        </div>
+        <div id="player_lock">
+          <i class="fa fa-lock" title="锁定"></i>
+        </div>
+      </div>
+
+      <!--播放列表-->
+      <div id="songListsDiv">
+        <div id="songListsDivTitle">
+          播放列表
+          <i id="closeSongListsDiv" class="fa fa-times" aria-hidden="true"></i>
+        </div>
+        <ul id="songListsUl">
+        </ul>
+      </div>
+    </div>
+
+  </body>
+
+  <!--jquery-->
+  <script src="/common/js/jquery-3.3.1.min.js"></script>
+  <script src="/common/js/jquery.session.js"></script>
+  <!--alert_info.js-->
+	<script src="/common/js/bootstrap.min.js"></script>
+  <script src="/common/js/alert_info.js"></script>
+  <script src="/common/js/loading.js"></script>
+  <!--player_audio-->
+  <script src="/common/js/jquery-ui.min.js"></script>
+  <!--API-->
+  <script src="/common/js/crypto-js.js"></script>
+  <!--自定义JavaScript-->
+  <script src="/common/js/player_audio.js"></script> 
+  <script src="/common/js/init_BgOne.js"></script> 
+  <script src="/common/js/index.js"></script>  
+
+</html>

@@ -1,0 +1,37 @@
+//安装
+$ [sudo] npm install forever -g
+
+//简单的启动  
+forever start app.js
+  
+//指定forever信息输出文件，当然，默认它会放到~/.forever/forever.log  
+forever start -l forever.log app.js  
+
+//指定app.js中的日志信息和错误日志输出文件，  
+//-o 就是console.log输出的信息，-e就是console.error输出的信息  
+forever start -o out.log -e err.log app.js  
+  
+//追加日志，forever默认是不能覆盖上次的启动日志，  
+forever start -l forever.log -a app.js  
+  
+//监听当前文件夹下的所有文件改动（文件改动监听并自动重启  ）
+forever start -w app.js  
+  
+//显示所有运行的服务  
+forever list  
+  
+//停止所有运行的node App  
+forever stopall  
+  
+//停止其中一个node App  
+forever stop app.js  
+
+//forever list 找到对应的id，然后：  
+forever stop [id]   
+  
+//启动所有  
+forever restartall
+
+---------------------
+
+本文来自 aerchi 的CSDN 博客 ，全文地址请点击：https://blog.csdn.net/aerchi/article/details/73650296?utm_source=copy 
